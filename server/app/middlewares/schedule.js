@@ -6,7 +6,7 @@ const superagent = require("superagent");
 const csv2mysql = require("csv2mysql");
 const dbUtils = require("../../db.js");
 const rule = new schedule.RecurrenceRule();
-rule.minute = [36];
+rule.minute = [53];
 let csvpath = path.resolve(__dirname, "../csv/three.csv");
 
 module.exports = (ctx, next) => {

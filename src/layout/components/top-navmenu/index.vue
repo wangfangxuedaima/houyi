@@ -11,9 +11,9 @@
       overflow-x:
       scroll
     >
-      <el-menu-item class="log-menu normal-bgcolor">
+      <!-- <el-menu-item class="log-menu normal-bgcolor">
         <el-image class="logo" src="http://10.18.38.44:8070/static/images/logo.png" fit="fit"></el-image>
-      </el-menu-item>
+      </el-menu-item> -->
       <nav-menu v-for="(item, index) in pageRoutes" :key="index" :item="item"></nav-menu>
       <el-menu-item class="userinfo-menu normal-bgcolor">
         <span class="user-name">{{ userName }}</span>
@@ -30,11 +30,11 @@
           <span @click="goto('/p/bookpkg/compare/view')">排期包对比</span>
         </el-menu-item>
       </el-submenu>
-      <el-menu-item class="search-menu normal-bgcolor" index>
+      <!-- <el-menu-item class="search-menu normal-bgcolor" index>
         <el-input placeholder="请输入内容" v-model="searchVal" size="small">
           <i slot="prefix" class="el-input__icon el-icon-search"></i>
         </el-input>
-      </el-menu-item>
+      </el-menu-item> -->
     </el-menu>
   </el-scrollbar>
 </template>
