@@ -19,5 +19,26 @@ module.exports = {
     root: path.join(__dirname, "../../dist"),
     extname: ".html",
     debug: process.env.NODE_ENV !== "production"
+  },
+
+  // ruohua数据库
+  ruohuaDataBase: {
+    host: "123.56.228.134",
+    port: "3306",
+    user: "root",
+    password: "rh20200109",
+    database: "ruohua",
+    charset: "utf8mb4", //utf8mb4才能保存emoji
+    connectionLimit: 10 //连接数量
   }
+  // // 数据组数据库
+  // dataDataBase: {
+  //   host: "10.16.19.122",
+  //   port: "9030",
+  //   user: "mediaai",
+  //   password: "aimedia",
+  //   database: "mediaai",
+  //   charset: "utf8mb4",
+  //   connectionLimit: 10 //连接数量
+  // }
 };

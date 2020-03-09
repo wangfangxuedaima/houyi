@@ -4,7 +4,7 @@ const bodyParser = require("koa-bodyparser");
 const helmet = require("koa-helmet");
 const render = require("koa-art-template");
 const cors = require("koa2-cors");
-
+const schedule = require("./app/middlewares/schedule");
 const config = require("./config");
 const router = require("./app/router");
 const corsHandler = require("./app/middlewares/cors");
@@ -21,7 +21,7 @@ app.use(async (ctx, next) => {
   };
   await next();
 });
-
+schedule();
 render(app, config.template);
 app.use(bodyParser());
 app.use(helmet());
