@@ -16,9 +16,18 @@ fs.createReadStream(csvPath)
     })
   )
   .subscribe((json) => {
-    console.log(json.Categories);
-    let sql = `INSERT INTO three_wf (Image, Image2) VALUES ('${json.Categories}', '${json["Product Url"]}')`;
-    dbUtils.ruohuaPool(sql);
+    let { Image, Image1, Image2, Image3, Size, Brand, Name } = json;
+    let sizes = Size.split(",");
+    console.log(sizes.length);
+    if (sizes.length > 1) {
+      sizes.forEach((v, index) => {
+        let sql = `INSERT INTO three_wf (Name, Brand ,url1, url2, url3, url4, url5,  size, qtyDetail ) VALUES ('${Name}', '${Brand}' ,'${Image}', '${Image1}', '${Image2}', '${Image3}', '${json["Product Url"]}', '${json["Size Info"]} ${sizes[index]}', '${json["Qty Detail"][index]}')`;
+        dbUtils.ruohuaPool(sql);
+      });
+    } else {
+      let sql = `INSERT INTO three_wf (Name, Brand, url1, url2, url3, url4, url5,  size, qtyDetail ) VALUES ('${Name}', '${Brand}' , '${Image}', '${Image1}', '${Image2}', '${Image3}', '${json["Product Url"]}', '${json["Size Info"]} ${Size}' , ${json["Qty Detail"]})`;
+      dbUtils.ruohuaPool(sql);
+    }
   })
   .on("done", () => {
     console.log("完成");
