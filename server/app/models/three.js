@@ -41,8 +41,19 @@ csvtojson({
       let Color = `${json["Color detail"]} ${json["Color Supplier"]}`;
       let Season = `${Year} ${singSeason}`;
       let sql = `INSERT INTO three_wf (Description ,sex, Discount, RetailPrice, skuId, Color, Season ,Material,MadeIn,Name, Brand ,url1, url2, url3, url4, url5,  size, Qty ) 
-                VALUES ('${Description}','${sex}' ,'${Discount}','${json["Retail Price"]}','${skuId}' ,'${Color}' ,'${Season}' ,'${Material}','${json["Made in"]}' ,'${Name}', '${Brand}' ,'${Image}', '${Image1}', '${Image2}', '${Image3}', '${json["Product Url"]}', '${size}', '${Qty[index]}')`;
-      dbUtils.ruohuaPool(sql);
+                VALUES ('${Description}','${sex}' ,'${Discount}','${
+        json["Retail Price"]
+      }','${skuId}' ,'${Color}' ,'${Season}' ,'${Material}','${json["Made in"]}' ,'${
+        Name.split("'")[1]
+      }', '${Brand}' ,'${Image}', '${Image1}', '${Image2}', '${Image3}', '${json["Product Url"]}', '${size}', '${
+        Qty[index]
+      }')`;
+      dbUtils
+        .ruohuaPool(sql)
+        .then((res) => {})
+        .catch((err) => {
+          console.error("测试", err);
+        });
     });
   })
   .on("error", (err) => {
