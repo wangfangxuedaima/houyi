@@ -5,10 +5,11 @@ const csv2mysql = require("csv2mysql");
 const path = require("path");
 const dbUtils = require("../../db");
 const csvtojson = require("csvtojson");
-const csvPath = path.resolve(__dirname, "../csv/one.csv");
+const csvPath = path.resolve(__dirname, "../csv/three.csv");
 console.log("开始时间" + dayjs().format("YYYYMMDD-hh:mm:ss"));
-let sql = `truncate table three`;
+let sql = `truncate table three_wf`;
 dbUtils.ruohuaPool(sql);
+
 csvtojson({
   delimiter: ";",
   escape: " "
@@ -34,25 +35,36 @@ csvtojson({
       Categories
     } = json;
     let sizes = Size.split(",");
+    let qty = Qty.split(",");
+
     sizes.forEach((v, index) => {
       let skuId = `${json["Sku Supplier"]} ${Variant} ${sizes[index]}`;
       let sex = Categories.split(">")[0];
       let size = `${json["Size Info"]} ${sizes[index]}`;
       let Color = `${json["Color detail"]} ${json["Color Supplier"]}`;
       let Season = `${Year} ${singSeason}`;
-      let sql = `INSERT INTO three_wf (Description ,sex, Discount, RetailPrice, skuId, Color, Season ,Material,MadeIn,Name, Brand ,url1, url2, url3, url4, url5,  size, Qty ) 
-                VALUES ('${Description}','${sex}' ,'${Discount}','${
-        json["Retail Price"]
-      }','${skuId}' ,'${Color}' ,'${Season}' ,'${Material}','${json["Made in"]}' ,'${
-        Name.split("'")[1]
-      }', '${Brand}' ,'${Image}', '${Image1}', '${Image2}', '${Image3}', '${json["Product Url"]}', '${size}', '${
-        Qty[index]
-      }')`;
+      let sql = `INSERT INTO three_wf (Description ,sex, Discount, RetailPrice, skuId, Color, Season ,Material,MadeIn,Name, Brand ,url1, url2, url3, url4, url5,  size, Qty ) VALUES ('${Description.replace(
+        /'/g,
+        "\\'"
+      )}','${sex}' ,'${Discount}','${json["Retail Price"]}','${skuId}' ,'${Color.replace(
+        /'/g,
+        "\\'"
+      )}' ,'${Season.replace(/'/g, "\\'")}' ,'${Material.replace(/'/g, "\\'")}','${json["Made in"]}' ,'${Name.replace(
+        /'/g,
+        "\\'"
+      )}', '${Brand.replace(/'/g, "\\'")}' ,'${Image.replace(/'/g, "\\'")}', '${Image1.replace(
+        /'/g,
+        "\\'"
+      )}', '${Image2.replace(/'/g, "\\'")}', '${Image3.replace(/'/g, "\\'")}', '${json["Product Url"].replace(
+        /'/g,
+        "\\'"
+      )}', '${size}', '${qty[index]}')`;
+
       dbUtils
         .ruohuaPool(sql)
         .then((res) => {})
         .catch((err) => {
-          console.error("测试", err);
+          // console.error(err);
         });
     });
   })
