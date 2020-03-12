@@ -1,9 +1,9 @@
-const path = require("path");
+// const path = require("path");
 const fs = require("fs");
+// const csvPath = path.resolve(__dirname, "../csv/three.csv");
 const dayjs = require("dayjs");
 const superagent = require("superagent");
 const csvtojson = require("csvtojson");
-const csvPath = path.resolve(__dirname, "../csv/three.csv");
 const dbUtils = require("../../db");
 
 Array.prototype.each = function(trans) {
@@ -93,7 +93,15 @@ function inputProducts2Db(url, user, passwd) {
       fs.writeFile("../csv/data.txt", csvNewData, function() {
         console.log("data.txt写入成功");
       });
-      console.log("完成");
+      let sql = `insert into three_product select  * from three_wf`;
+      dbUtils
+        .ruohuaPool(sql)
+        .then((res) => {
+          console.log("完成");
+        })
+        .catch((err) => {
+          console.error("导入新表", err);
+        });
     });
 }
 
