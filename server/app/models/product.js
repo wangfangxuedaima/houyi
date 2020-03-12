@@ -119,6 +119,7 @@ function parseProduct(product, index) {
     Description: product.Description,
     sex: product.Categories.split(">")[0],
     Discount: product.Discount,
+    Categories: product.Categories,
     RetailPrice: product["Retail Price"],
     skuId: `${product["Sku Supplier"]} ${product.Variant} ${sizeAry[index]}`,
     Color: `${product["Color detail"]} ${product["Color Supplier"]}`,
