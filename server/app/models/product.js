@@ -93,6 +93,7 @@ function inputProducts2Db(url, user, passwd) {
       fs.writeFile("../csv/data.txt", csvNewData, function() {
         console.log("data.txt写入成功");
       });
+      dbUtils.ruohuaPool("truncate table three_product");
       let sql = `insert into three_product select  * from three_wf`;
       dbUtils
         .ruohuaPool(sql)
