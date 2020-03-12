@@ -2,12 +2,13 @@ const dbUtils = require("../../db");
 
 const ThreeController = {
   async getList(ctx) {
-    const { pageSize = 1000, pageNum = 1 } = ctx.request.query;
-    let sql = `select count(*) as records from three_wf`;
-    records = await dbUtils.ruohuaPool(sql);
+    const { pageSize = 1000, pageNum = 1, skuId } = ctx.request.query;
+    let sql = `select count(*) as records from three_wf where skuId like '${skuId}%'`;
+    let records = await dbUtils.ruohuaPool(sql);
+    records = records[0].records;
     total = Math.ceil(records / pageSize);
-    let data = await dbUtils.ruohuaPool(sql);
-    sql = `select * from three_wf limit ${pageNum - 1} * ${pageSize} ${pageSize}`;
+    let headerNum = (pageNum - 1) * pageSize;
+    sql = `select * from three_wf where skuId like '%${skuId}%' limit ${headerNum}, ${pageSize}`;
     let rows = await dbUtils.ruohuaPool(sql);
     data = {
       rows,
@@ -15,7 +16,7 @@ const ThreeController = {
       records,
       total
     };
-    ctx.body = data;
+    ctx.body = { data };
   }
 };
 
