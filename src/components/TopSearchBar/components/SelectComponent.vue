@@ -9,9 +9,12 @@
     <el-option
       v-for="(item, index) in dataList"
       :key="index"
-      :disabled="item.disabled"
-      :label="config.listGetter && config.listGetter.optionName ? item[config.listGetter.optionName] : item.dataname"
-      :value="config.listGetter && config.listGetter.optionValue ? item[config.listGetter.optionValue] : item.datavalue"
+      :label="config.listGetter && config.listGetter.optionName
+        ? item[config.listGetter.optionName]
+        : item.dataname"
+      :value="config.listGetter && config.listGetter.optionValue
+        ? item[config.listGetter.optionValue]
+        : item.datavalue"
     ></el-option>
   </el-select>
 </template>
@@ -60,11 +63,6 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      dataList: []
-    };
-  },
   computed: {
     model: {
       get: function() {
@@ -73,6 +71,10 @@ export default {
       set: function(newVal) {
         this.$emit("input", newVal);
       }
+    },
+    dataList() {
+      let listGetter = this.config.listGetter;
+      return listGetter ? listGetter.data : this.config.data;
     },
     listGetterConfig() {
       let listGetter = this.config.listGetter;
@@ -87,7 +89,7 @@ export default {
   },
   created() {
     if (!this.listGetterConfig) {
-      this.Ffilter(this.config.data);
+      this.model = this.config.default || "";
     }
   },
   methods: {
@@ -96,16 +98,14 @@ export default {
       // 全部
       let listKey = (this.listGetterConfig && this.listGetterConfig.optionName) || "dataname";
       let listValue = (this.listGetterConfig && this.listGetterConfig.optionValue) || "datavalue";
-      if (this.config.total) {
-        let defaultObj = {};
-        defaultObj[listValue] = "";
-        defaultObj[listKey] = "全部";
-        arr.unshift(defaultObj);
-      }
+      // let defaultObj = {}
+      // defaultObj[listValue] = ''
+      // defaultObj[listKey] = '全部'
+      // arr.unshift(defaultObj)
+
       // 默认值
-      // let defaultVal = arr[0] && arr[0][listValue];
-      // this.model = this.config.default ? this.config.default : defaultVal;
-      this.dataList = arr;
+      let defaultVal = arr[0] && arr[0][listValue];
+      this.model = this.config.default ? this.config.default : defaultVal;
       return arr;
     }
   }

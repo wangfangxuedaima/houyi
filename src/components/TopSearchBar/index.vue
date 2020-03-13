@@ -1,14 +1,17 @@
 <template>
   <div class="top-search-bar">
     <el-card :shadow="config.cardShadow || 'never'">
-      <operation-buttons class="before-btns" :buttons="topBtns" :isFloat="false" :align="'left'" @operate="fOperation">
+      <operation-buttons
+        class="before-btns"
+        :buttons="topBtns"
+        :isFloat="false"
+        :align="'left'"
+        @operate="fOperation"
+      >
         <div v-for="(slot, index) in slotList" :key="index" :slot="slot">
           <slot :name="slot"></slot>
         </div>
       </operation-buttons>
-      <label v-if="config.defaultSearch" style="font-size: 12px;">
-        {{ config.defaultSearch.label }}
-      </label>
       <search
         v-if="config.defaultSearch"
         :isAdvanceSearch="searchBtns.length > 0"
@@ -19,9 +22,6 @@
         @on-search="fSearch"
         @on-push-down="bIsShowMoreSearch = !bIsShowMoreSearch"
       ></search>
-      <div class="search-right-slot">
-        <slot name="search-right"></slot>
-      </div>
 
       <transition name="el-fade-in-linear">
         <!-- 输入区 -->
@@ -35,15 +35,14 @@
             size="small"
           >
             <el-form-item
-              v-for="(item, index) in _formItems || []"
+              v-for="(item, index) in formItems || []"
               :key="index"
-              :prop="item.prop"
               v-bind="item.formItemAttrs"
             >
-              <component :config="item" v-bind="item.attrs" v-model="searchObject[item.prop]" :is="item.type" />
+              <component :config="item" v-model="searchObject[item.prop]" :is="item.type" />
             </el-form-item>
             <!-- 操作按钮 -->
-            <el-form-item style="height: 35px;">
+            <el-form-item>
               <operation-buttons
                 :buttons="searchBtns"
                 :isFloat="false"
@@ -59,19 +58,17 @@
 </template>
 <script>
 import Search from "../Search";
-import { omit } from "lodash";
-import { detailMixins } from "@/mixins";
-
-import OperationButtons from "@/components/OperationButtons";
 import Input from "./components/InputComponent.vue";
 import Select from "./components/SelectComponent.vue";
 import DataPicker from "./components/DataPickerComponent.vue";
 import Radio from "./components/RadioComponent.vue";
 import Cascader from "./components/CascaderComponent.vue";
-import CheckBox from "./components/CheckBoxComponent.vue";
-
+import OperationButtons from "@/components/OperationButtons";
+import { getNotNullValues } from "@/utils/index";
+import { omit } from "lodash";
+import Vue from "vue";
+import { debounce } from "lodash";
 export default {
-  mixins: [detailMixins],
   components: {
     Search,
     Radio,
@@ -79,13 +76,12 @@ export default {
     DataPicker,
     Select,
     Input,
-    CheckBox,
     OperationButtons
   },
   data() {
     return {
       bIsShowMoreSearch: false,
-      searchObject: {}
+      searchObject: { ...this.search }
     };
   },
   props: {
@@ -104,19 +100,17 @@ export default {
           searchItems: []
         };
       }
+    },
+    search: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     }
   },
   computed: {
-    // 根据formItem计算出实际需要让页面渲染的真正的_formItem数据
-    _formItems() {
-      let formItem = (this.config.searchItems || []).filter((item) => {
-        return !item.hidden;
-      });
-      return formItem
-        .map((item) => {
-          return this.computeFormItem(item, this.searchObject);
-        })
-        .filter((item) => item._ifRender);
+    formItems() {
+      return (this.config.searchItems ? this.config.searchItems : []).filter((v) => !v.hidden);
     },
     // 收集页面中的所有slot
     slotList() {
@@ -132,70 +126,73 @@ export default {
     searchBtns() {
       return this.config.searchButtons
         ? this.config.searchButtons
-        : [{ name: "查询" }, { name: "清空", attrs: { type: "info" } }];
+        : [
+            { name: "查询", type: "primary" },
+            { name: "清空", type: "primary" }
+          ];
+    },
+    watchSearchObj() {
+      return JSON.parse(JSON.stringify(this.searchObject));
     }
   },
   watch: {
-    searchObject: {
+    watchSearchObj: {
       // 深度监听
-      handler: function() {
+      handler: function(newVal, oldVal) {
         if (this.config.searchImmediate) {
           this.fSearch();
         } else {
+          // 用来在非实时请求情况下根据搜索条件做判断
+          // let searchObject = getNotNullValues({ ...this.searchObject })
           this.$emit("fGetEmitSearchObj", this.fGetEmitSearchObj());
         }
       },
       deep: true
     }
   },
-  mounted() {
+  created() {
+    this.fResetData();
     this.bIsShowMoreSearch = !this.config.defaultSearch;
-    setTimeout(() => {
-      this.fResetData();
-    }, 1000);
   },
   methods: {
-    computeFormItem(formItem, data) {
-      const item = { ...formItem };
-      // 获取动态 Attributes
-      if (item.getAttrs) {
-        item.attrs = Object.assign(item.attrs, item.getAttrs(data));
-      }
-      // 条件渲染
-      item._ifRender = item.ifRender ? item.ifRender(data) : true;
-      return item;
-    },
     fOperation(item) {
-      if (["查询", "搜索"].includes(item.name)) {
+      if (item.name === "查询") {
         this.fSearch();
-      } else if (["清空", "重置"].includes(item.name)) {
+      } else if (item.name === "清空") {
         this.fResetData();
       } else if (item.routerLink) {
         this.$router.push(item.routerLink);
       } else {
-        if (item.valid) {
-          this.fVelidateForm(this.$refs.searchForm, () => {
-            this.$emit("operate", item, this.fGetEmitSearchObj());
-          });
-        } else {
-          this.$emit("operate", item, this.fGetEmitSearchObj());
-        }
+        this.$emit("operate", item);
       }
     },
+    fSetSearchVal(keys, val) {
+      keys.forEach((key) => {
+        this.searchObject[key] = val;
+      });
+    },
+    fSetSearchItemAttr(props, attr, val) {
+      this.config.searchItems.forEach((item, index) => {
+        if (props.includes(item.prop)) {
+          let newItem = this.config.searchItems[index];
+          if (newItem) {
+            newItem[attr] = val;
+            Vue.set(this.config.searchItems, index, newItem);
+          }
+        }
+      });
+    },
     fSearch() {
-      if (this.config.valid) {
-        this.fVelidateForm(this.$refs.searchForm, () => {
-          this.$emit("fSearch", this.fGetEmitSearchObj());
-        });
-      } else {
+      this.fVelidateForm(this.$refs.searchForm, () => {
+        //let searchObject = getNotNullValues({ ...this.searchObject })
         this.$emit("fSearch", this.fGetEmitSearchObj());
-      }
+      });
     },
     fGetEmitSearchObj() {
       let emitSearchObject = { ...this.searchObject };
       // DateRange 数据处理
-      this._formItems.forEach((item) => {
-        if (item.attrs.type === "daterange") {
+      this.formItems.forEach((item) => {
+        if (item.attrs && item.attrs.type === "daterange") {
           let dates = emitSearchObject[item.prop];
           if (dates && dates.length === 2) {
             emitSearchObject = omit(emitSearchObject, item.prop);
@@ -204,74 +201,93 @@ export default {
           }
         }
       });
-      return emitSearchObject;
-    },
-    fSetSearchVal(obj) {
-      this.searchObject = { ...this.searchObject, ...obj };
+      return getNotNullValues(emitSearchObject);
     },
     fResetData() {
       const defaultValueMap = {
         Select: "",
         DataRange: [],
         Input: "",
-        Radio: 0,
-        CheckBox: 0
+        Radio: 0
       };
-      let newObj = { ...this.originalSearchObj };
-      this._formItems.forEach((item) => {
-        let value = item.default || defaultValueMap[item.type];
-        if (item.type === "Select") {
-          value = item.attrs && item.attrs.multiple ? [] : "";
+      let newObj = { ...this.searchObject };
+      this.formItems.forEach((item) => {
+        if (!item.noReset) {
+          newObj[item.prop] = item.defaultValue || defaultValueMap[item.type];
         }
-        if (item.type === "DataRange") {
-          value = item.attrs && item.attrs.type.includes("range") ? [] : "";
-        }
-        newObj[item.prop] = value;
       });
       this.searchObject = newObj;
+    },
+    fVelidateForm(
+      form,
+      onSuccess,
+      onFail = null,
+      sTip = "验证未通过,请查看页面中的错误消息",
+      bScroll2FirstError = true
+    ) {
+      if (form && typeof form.validate === "function") {
+        form.validate((valid) => {
+          if (valid) {
+            if (typeof onSuccess === "function") {
+              onSuccess.call(this);
+            }
+          } else {
+            if (typeof onFail === "function") {
+              onFail.call(this);
+            }
+            if (sTip) {
+              this.$notify({
+                title: "提示",
+                message: sTip,
+                type: "warning",
+                duration: 1500
+              });
+            }
+
+            if (bScroll2FirstError) {
+              this.$nextTick(() => {
+                setTimeout(fScrollToFirstError, 0);
+              });
+            }
+          }
+        });
+      }
     }
   }
 };
 </script>
 <style lang="scss">
 .top-search-bar {
-  margin-bottom: 5px;
-  .el-card {
-    border: 0;
-    .el-card__body {
-      padding: 5px 5px 0;
-      .el-button {
-        font-size: 12px;
-      }
-    }
-  }
-  .search-right-slot {
-    display: inline-block;
-    width: 195px;
-    margin-left: 10px;
+  margin-bottom: 10px;
+  .el-card__body {
+    padding: 10px 5px 0;
   }
   .op {
     display: inline-block;
     margin-top: 0px;
     vertical-align: bottom;
   }
+  .before-btns {
+    margin-bottom: 10px;
+  }
   .search-detail-wrap {
     display: inline-block;
-    margin-bottom: 10px;
     .el-form--inline .el-form-item {
       vertical-align: bottom !important;
       margin-bottom: 6px;
     }
   }
-  .before-btns {
-    margin-bottom: 10px;
+  .add-btn-default {
+    float: left;
+  }
+  .advance-btn {
+    margin-right: 20px;
   }
   .advance-search {
     margin-bottom: 10px;
-    margin-left: 0 !important;
   }
-  .el-form-item__label {
-    font-size: 12px;
+  .operate-btn {
+    margin-left: 20px;
   }
 }
 </style>

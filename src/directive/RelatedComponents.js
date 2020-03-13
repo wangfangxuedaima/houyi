@@ -1,4 +1,4 @@
-import Vue from "vue";
+import Vue from 'vue'
 // import { watch } from 'fs';
 
 /**
@@ -20,39 +20,39 @@ import Vue from "vue";
             }"
  */
 const RelatedComponents = {
-  name: "relate",
+  name: 'relate',
   bind(el, binding, vnode) {
-    let o = binding.value;
-    let watch = o.watch;
-    let ref = o.ref;
-    let sReloadEvent = o.reloadEvent || "reload";
-    let onchange = o.onchange;
-    let context = vnode.context;
+    let o = binding.value
+    let watch = o.watch
+    let ref = o.ref
+    let sReloadEvent = o.reloadEvent || 'reload'
+    let onchange = o.onchange
+    let context = vnode.context
 
     context.$nextTick(() => {
-      let vm = context.$refs[ref] || document.querySelector(ref);
+      let vm = context.$refs[ref] || document.querySelector(ref)
       if (watch && vm) {
         el.unwatch = context.$watch(watch, (newVal, oldVal) => {
-          if (typeof onchange === "function") {
-            onchange.call(context, newVal);
+          if (typeof onchange === 'function') {
+            onchange.call(context, newVal)
           }
           if (vm instanceof Vue) {
-            vm.$emit(sReloadEvent, newVal);
+            vm.$emit(sReloadEvent, newVal)
           } else {
-            let event = new Event(sReloadEvent);
-            event.data = newVal;
-            vm.dispatchEvent(event);
+            let event = new Event(sReloadEvent)
+            event.data = newVal
+            vm.dispatchEvent(event)
           }
-        });
+        })
       }
-    });
+    })
   },
   unbind(el, binding, vnode) {
-    if (el.unwatch && typeof el.unbind === "function") {
-      el.unwatch();
+    if (el.unwatch && typeof el.unbind === 'function') {
+      el.unwatch()
     }
-    el.unwatch = null;
-  }
-};
+    el.unwatch = null
+  },
+}
 
-export default RelatedComponents;
+export default RelatedComponents

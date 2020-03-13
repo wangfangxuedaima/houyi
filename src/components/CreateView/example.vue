@@ -1,16 +1,14 @@
 <template>
   <div>
-    <create-view
-      v-model="data"
+    <create-view v-model="data"
       :formItems="formItems"
       :buttons="buttons"
       label-position="right"
-      label-width="120px"
-    ></create-view>
+      label-width="120px"></create-view>
   </div>
 </template>
 <script>
-import CreateView from "@/components/CreateView";
+import CreateView from '@/components/CreateView'
 export default {
   components: { CreateView },
   data() {
@@ -21,52 +19,48 @@ export default {
       },
       formItems: [
         {
-          type: "Section",
-          title: "测试",
-          prop: "section"
+          type: 'Section',
+          title: '测试',
+          prop: 'section'
         },
         {
-          type: "Input",
-          prop: "input",
+          type: 'Input',
+          prop: 'input',
           formItemAttrs: {
-            label: "input",
+            label: 'input',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            placeholder: "请输入input",
-            clearable: true
-          }
+            placeholder: '请输入input',
+            clearable: true,
+          },
         },
         {
-          type: "Select",
-          prop: "select",
+          type: 'Select',
+          prop: 'select',
           formItemAttrs: {
-            label: "select",
+            label: 'select',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            placeholder: "请输入",
-            clearable: true
+            placeholder: '请输入',
+            clearable: true,
           },
           listGetter: {
-            url: "/basemappings",
-            params: { datatype: "plat" },
-            keyMap: { list: "data" },
+            url: '/basemappings',
+            params: { datatype: 'plat' },
+            keyMap: { list: 'data' },
             data: [],
-            optionValue: "map_value",
-            optionName: "map_name"
+            optionValue: 'map_value',
+            optionName: 'map_name',
           }
           // data: [
           //   {
@@ -76,237 +70,215 @@ export default {
           // ]
         },
         {
-          type: "CheckBox",
-          prop: "checkBox",
+          type: 'CheckBox',
+          prop: 'checkBox',
           formItemAttrs: {
-            label: "checkBox",
+            label: 'checkBox',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            placeholder: "请输入",
+            placeholder: '请输入',
             clearable: true,
-            separator: "/",
-            props: { multiple: true }
+            separator: '/',
+            props: { multiple: true },
             //  style: 'width: 400px'
           },
           listGetter: {
-            url: "/basemappings",
-            params: { datatype: "plat" },
-            keyMap: { list: "data" },
+            url: '/basemappings',
+            params: { datatype: 'plat' },
+            keyMap: { list: 'data' },
             data: [],
-            optionValue: "map_value",
-            optionName: "map_name",
-            optionValueUseIndex: true
+            optionValue: 'map_value',
+            optionName: 'map_name',
+            optionValueUseIndex: true,
           }
         },
         {
-          type: "Cascader",
-          prop: "cascader",
+          type: 'Cascader',
+          prop: 'cascader',
           formItemAttrs: {
-            label: "cascader",
+            label: 'cascader',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            placeholder: "请输入",
+            placeholder: '请输入',
             clearable: true,
-            separator: "/",
-            props: { multiple: true }
+            separator: '/',
+            props: { multiple: true },
             //  style: 'width: 400px'
           },
           listGetter: {
-            url: "/basemappings",
-            params: { datatype: "plat" },
-            keyMap: { list: "data" },
+            url: '/basemappings',
+            params: { datatype: 'plat' },
+            keyMap: { list: 'data' },
             data: [],
-            optionValue: "map_value",
-            optionName: "map_name",
-            optionValueUseIndex: true
+            optionValue: 'map_value',
+            optionName: 'map_name',
+            optionValueUseIndex: true,
           }
         },
         {
-          type: "DataPicker",
-          prop: "dataPicker",
+          type: 'DataPicker',
+          prop: 'dataPicker',
           formItemAttrs: {
-            label: "dataPicker",
+            label: 'dataPicker',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
             clearable: true,
             // type: 'date',
             // format: 'yyyy-MM-dd',
             // 'value-format': 'yyyy-MM-dd'
-            type: "datetimerange",
-            "start-placeholder": "开始日期",
-            "end-placeholder": "结束日期",
-            format: "yyyy-MM-dd HH:mm:ss",
-            "value-format": "yyyy-MM-dd HH:mm:ss"
-          }
+            type: 'datetimerange',
+            'start-placeholder': '开始日期',
+            'end-placeholder': '结束日期',
+            format: 'yyyy-MM-dd HH:mm:ss',
+            'value-format': 'yyyy-MM-dd HH:mm:ss'
+
+          },
         },
         {
-          type: "FileUpload",
-          prop: "fileUpload",
+          type: 'FileUpload',
+          prop: 'fileUpload',
           formItemAttrs: {
-            label: "fileUpload",
+            label: 'fileUpload',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            uploadUrl: "",
-            allowFileTypes: "",
-            maxSize: ""
-          }
+            uploadUrl: '',
+            allowFileTypes: '',
+            maxSize: ''
+          },
         },
         {
-          type: "MultiInput",
-          prop: "multiInput",
+          type: 'MultiInput',
+          prop: 'multiInput',
           formItemAttrs: {
-            label: "multiInput",
+            label: 'multiInput',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            style: "width: 550px"
+            style: 'width: 550px'
           },
           select: {
-            type: "Select",
-            prop: "select",
+            type: 'Select',
+            prop: 'select',
             formItemAttrs: {
-              label: "select",
+              label: 'select',
               rules: [
                 {
-                  required: true,
-                  message: "请输入",
-                  trigger: "blur"
-                }
-              ]
+                  required: true, message: '请输入', trigger: 'blur',
+                },
+              ],
             },
             attrs: {
-              placeholder: "请输入",
+              placeholder: '请输入',
               clearable: true,
-              style: "width: 150px"
+              style: 'width: 150px'
             },
             listGetter: {
-              url: "/basemappings",
-              params: { datatype: "plat" },
-              keyMap: { list: "data" },
+              url: '/basemappings',
+              params: { datatype: 'plat' },
+              keyMap: { list: 'data' },
               data: [],
-              optionValue: "map_value",
-              optionName: "map_name"
+              optionValue: 'map_value',
+              optionName: 'map_name',
             }
           }
         },
         {
-          type: "Radio",
-          prop: "radio",
+          type: 'Radio',
+          prop: 'radio',
           formItemAttrs: {
-            label: "radio",
+            label: 'radio',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           data: [
             {
-              text: "是",
-              value: 0
+              text: '是',
+              value: 0,
             },
             {
-              text: "否",
-              value: 1
-            }
-          ]
+              text: '否',
+              value: 1,
+            },
+          ],
         },
         {
-          type: "Table",
-          prop: "table",
+          type: 'Table',
+          prop: 'table',
           formItemAttrs: {
-            label: "table",
+            label: 'table',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            showSelection: true
+            showSelection: true,
           },
           columns: [
             {
-              prop: "map_name",
-              label: "DSP名称",
-              "min-width": 120
+              prop: 'map_name', label: 'DSP名称', 'min-width': 120,
             },
             {
-              prop: "map_value",
-              label: "可用流量百分比",
-              "min-width": 120
-            }
+              prop: 'map_value', label: '可用流量百分比', 'min-width': 120,
+            },
           ],
           listGetter: {
-            url: "/basemappings",
-            params: { datatype: "plat" },
-            keyMap: { list: "data" },
+            url: '/basemappings',
+            params: { datatype: 'plat' },
+            keyMap: { list: 'data' },
             data: [],
-            optionValue: "map_value",
-            optionName: "map_name",
-            optionValueUseIndex: true
+            optionValue: 'map_value',
+            optionName: 'map_name',
+            optionValueUseIndex: true,
           }
-        },
-        {
-          type: "Tag",
-          prop: "tag",
-          addName: "添加",
+        }, {
+          type: 'Tag',
+          prop: 'tag',
+          addName: '添加',
           formItemAttrs: {
-            label: "tag",
+            label: 'tag',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
             closable: true,
-            "disable-transitions": false
-          }
+            'disable-transitions': false,
+          },
         }
       ],
-      buttons: []
-    };
+      buttons: [],
+    }
   }
-};
+}
 </script>

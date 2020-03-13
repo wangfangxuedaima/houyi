@@ -1,105 +1,100 @@
 <template>
   <div class="create_view_multiinput">
-    <el-input v-for="(item, index) in model" :key="index" v-model="item.value" v-bind="config.attrs">
-      <select-component
-        v-if="config.select"
+    <el-input v-for="(item, index) in model"
+      :key="index"
+      v-model="item.value"
+      v-bind="config.attrs">
+      <select-component v-if="config.select"
         :config="config.select | selectFilter(index)"
         v-model="item.select"
-        slot="prepend"
-      ></select-component>
-      <el-button
-        @click="fAddNew(index)"
+        slot="prepend"></select-component>
+      <el-button @click="fAddNew(index)"
         :icon="index === 0 ? 'el-icon-circle-plus-outline' : 'el-icon-delete'"
         slot="append"
         type="danger"
-        circle
-      ></el-button>
+        circle></el-button>
     </el-input>
   </div>
 </template>
 <script>
-import SelectComponent from "./SelectComponent.vue";
+import SelectComponent from './SelectComponent.vue'
 export default {
-  name: "MultiInput",
+  name: 'MultiInput',
   components: { SelectComponent },
   data() {
-    return {};
+    return {}
   },
   props: {
     value: {
-      type: Array
+      type: Array,
     },
     config: {
       type: Object,
       default: () => {
         return {
-          type: "MultiInput",
-          prop: "multiInput",
+          type: 'MultiInput',
+          prop: 'multiInput',
           formItemAttrs: {
-            label: "multiInput",
+            label: 'multiInput',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            style: "width: 550px"
+            style: 'width: 550px'
           },
           select: {
-            type: "Select",
-            prop: "select",
+            type: 'Select',
+            prop: 'select',
             formItemAttrs: {
-              label: "select",
+              label: 'select',
               rules: [
                 {
-                  required: true,
-                  message: "请输入",
-                  trigger: "blur"
-                }
-              ]
+                  required: true, message: '请输入', trigger: 'blur',
+                },
+              ],
             },
             attrs: {
-              placeholder: "请输入",
+              placeholder: '请输入',
               clearable: true,
-              style: "width: 150px"
+              style: 'width: 150px'
             },
             listGetter: {
-              url: "/basemappings",
-              params: { datatype: "plat" },
-              keyMap: { list: "data" },
+              url: '/basemappings',
+              params: { datatype: 'plat' },
+              keyMap: { list: 'data' },
               data: [],
-              optionValue: "map_value",
-              optionName: "map_name"
+              optionValue: 'map_value',
+              optionName: 'map_name',
             }
           }
-        };
-      }
-    }
+        }
+      },
+    },
   },
   computed: {
     model: {
-      get: function() {
-        return this.value || [];
+      get: function () {
+        return this.value || []
       },
-      set: function(val) {
-        this.$emit("input", val);
-      }
-    }
+      set: function (val) {
+        this.$emit('input', val)
+      },
+    },
   },
   filters: {
     selectFilter(val, index) {
       return {
         ...val,
-        prop: val.prop + index
-      };
-    }
+        prop: val.prop + index,
+      }
+    },
   },
   mounted() {
     if (this.model.length === 0) {
-      this.fAddNew(0);
+      this.fAddNew(0)
     }
   },
   methods: {
@@ -107,24 +102,24 @@ export default {
       if (index === 0) {
         // 限制可增加个数
         if (this.model.length >= (this.config.length || 5)) {
-          return;
+          return
         }
         // 新增
         this.model = [
           ...this.model,
           {
-            value: this.config.default || "",
-            select: (this.config.select && this.config.select.default) || ""
-          }
-        ];
-      } else {
-        // 删除
-        this.model.splice(index, 1);
-        this.model = [...this.model];
+            value: this.config.defaultValue || '',
+            select: this.config.select
+              && this.config.select.defaultValue || '',
+          },
+        ]
+      } else { // 删除
+        this.model.splice(index, 1)
+        this.model = [...this.model]
       }
-    }
-  }
-};
+    },
+  },
+}
 </script>
 <style lang="scss">
 .create_view_multiinput {

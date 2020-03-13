@@ -24,53 +24,53 @@ export default {
   props: {
     as: {
       type: String,
-      default: "div"
-    }
+      default: 'div',
+    },
   },
   data() {
     return {
-      root: "_root_",
-      proxy: null
-    };
+      root: '_root_',
+      proxy: null,
+    }
   },
   mounted() {
-    let vm = this.$refs[this.root];
-    let _this = this;
+    let vm = this.$refs[this.root]
+    let _this = this
     const Handler = {
       get(target, property, receiver) {
         if (property in target) {
-          return target[property];
+          return target[property]
         } else if (vm && property in vm) {
-          return vm[property];
+          return vm[property]
         }
-        return null;
+        return null
       },
       set(target, property, value) {
         // todo test,may be need $set
-        let t = null;
+        let t = null
         if (property in target) {
-          t = target;
+          t = target
         } else if (vm && property in vm) {
-          t = vm;
+          t = vm
         }
 
         if (t) {
           try {
-            _this.$set(t, property, value);
+            _this.$set(t, property, value)
           } catch (error) {
-            console.log(error);
+            console.log(error)
           }
         }
-      }
-    };
-    this.proxy = new Proxy(this, Handler);
+      },
+    }
+    this.proxy = new Proxy(this, Handler)
   },
   render(h) {
-    return h(this.as || "div", {
+    return h(this.as || 'div', {
       attrs: this.$attrs,
       on: this.$listeners,
-      ref: this.root
-    });
-  }
-};
+      ref: this.root,
+    })
+  },
+}
 </script>

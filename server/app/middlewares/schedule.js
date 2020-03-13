@@ -2,7 +2,7 @@ const schedule = require("node-schedule");
 const dayjs = require("dayjs");
 const rule = new schedule.RecurrenceRule();
 const Product = require("../models/product");
-rule.minute = [0, 30];
+rule.minute = [0];
 
 module.exports = (ctx, next) => {
   try {

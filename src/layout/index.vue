@@ -1,24 +1,27 @@
 <template>
-  <el-container class="app-wrapper">
-    <el-header class="page-header" height="50px">
-      <top-navmenu class="top-nav-menu"></top-navmenu>
-    </el-header>
-    <bread-crumb></bread-crumb>
-    <el-main class="app-container">
-      <page-main></page-main>
-    </el-main>
+  <el-container class="app-wrapper"
+    :class="{ 'closebar-app-wrapper': opened }">
+    <top-header class="app-header"></top-header>
+    <div class="app-container">
+      <side-bars class="app-aside"></side-bars>
+      <page-main class="app-main"></page-main>
+    </div>
   </el-container>
 </template>
 <script>
-import topNavmenu from "./components/top-navmenu";
-import PageMain from "./components/pageMain";
-import BreadCrumb from "./components/breadCrumb";
+import SideBars from './components/sideBars'
+import TopHeader from './components/header'
+import PageMain from './components/pageMain'
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
-    topNavmenu,
-    BreadCrumb,
+    SideBars,
+    TopHeader,
     PageMain
-  }
-};
+  },
+  computed: {
+    ...mapGetters(['opened'])
+  },
+}
 </script>
-<style lang="scss" scoped></style>

@@ -1,11 +1,15 @@
 <template>
-  <div>home</div>
+  <div></div>
 </template>
 <script>
-import { getUserMenuHeader } from "@/api/system/user";
+import { login, loginOut } from '@/api/login'
 export default {
+  data() {
+    return {}
+  },
   created() {
-    // getUserMenuHeader().then((res) => {});
-  }
-};
+    // login().then(res => { })
+    // loginOut().then(res => { })
+  },
+}
 </script>

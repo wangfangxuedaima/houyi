@@ -1,26 +1,28 @@
 <template>
-  <div ref="container" :class="['search-container', { focus: !bIsBlur }]">
+  <div ref="container"
+    :class="['search-container', {'focus':!bIsBlur}]">
     <i class="el-icon-search search-icon"></i>
-    <input
-      ref="searchInput"
+    <input ref="searchInput"
       v-model.trim="sSearchVal"
       type="text"
       class="search-input"
       :placeholder="placeholder"
       @keyup.enter="fToSearch"
       @focus="fToFocus"
-      @blur="fToBlur"
-    />
-    <i v-if="advanceSearch" :class="['el-icon-arrow-up', 'cart', { 'is-reverse': bIsPushDown }]" @click="fToPushDown" />
+      @blur="fToBlur">
+    <i v-if="advanceSearch"
+      :class="['el-icon-arrow-up', 'cart', {'is-reverse': bIsPushDown}]"
+      @click="fToPushDown" />
   </div>
 </template>
 <script>
+
 // todo 使用el-input重写
 export default {
-  name: "Search",
+  name: 'Search',
   model: {
-    prop: "searchval",
-    event: "change"
+    prop: 'searchval',
+    event: 'change',
   },
   props: {
     width: String,
@@ -28,82 +30,82 @@ export default {
     searchval: String,
     isAdvanceSearch: {
       type: Boolean,
-      default: false
+      default: false,
     },
     placeholder: {
       type: String,
-      default: "请输入内容后，按回车搜索"
-    }
+      default: '请输入内容后，按回车搜索',
+    },
   },
   data() {
     return {
       bIsBlur: true,
       bIsPushDown: false,
-      sSearchVal: null
-    };
+      sSearchVal: null,
+    }
   },
   computed: {
     advanceSearch() {
-      let _r = true;
-      if (typeof this.isAdvanceSearch !== "undefined") {
-        _r = this.isAdvanceSearch;
+      let _r = true
+      if (typeof this.isAdvanceSearch !== 'undefined') {
+        _r = this.isAdvanceSearch
       }
-      return _r;
-    }
+      return _r
+    },
   },
   watch: {
     sSearchVal(val) {
-      this.$emit("change", val);
+      this.$emit('change', val)
     },
     searchval(val) {
-      this.sSearchVal = val;
+      this.sSearchVal = val
     },
     isPushdown(val) {
-      this.fTriggerPushDown(val);
+      this.fTriggerPushDown(val)
     },
     bIsPushDown(val) {
-      this.$emit("update:isPushDown", val);
-    }
+      this.$emit('update:isPushDown', val)
+    },
   },
   mounted() {
     if (this.width) {
-      this.$refs.container.style.width = this.width;
+      this.$refs.container.style.width = this.width
     }
   },
   methods: {
     fToSearch() {
-      this.$emit("on-search", this.sSearchVal);
+      this.$emit('on-search', this.sSearchVal)
     },
     fToFocus() {
-      this.bIsBlur = false;
-      this.$refs.searchInput.select();
-      this.bIsPushDown = false;
-      this.$emit("on-focus");
+      this.bIsBlur = false
+      this.$refs.searchInput.select()
+      this.bIsPushDown = false
+      this.$emit('on-focus')
     },
     fToBlur() {
-      this.bIsBlur = true;
+      this.bIsBlur = true
     },
     fToPushDown() {
-      this.bIsPushDown = !this.bIsPushDown;
+      this.bIsPushDown = !this.bIsPushDown
 
       if (this.bIsPushDown) {
-        this.sSearchVal = null;
+        this.sSearchVal = null
       }
 
-      this.$emit("on-push-down", this.bIsPushDown);
+      this.$emit('on-push-down', this.bIsPushDown)
     },
     fClearInput() {
-      this.sSearchVal = null;
+      this.sSearchVal = null
     },
     fTriggerPushDown(bIsPushDown) {
       if (bIsPushDown == null) {
-        return false;
+        return false
       }
-      this.bIsPushDown = bIsPushDown;
-      this.$emit("on-push-down", this.bIsPushDown);
-    }
-  }
-};
+      this.bIsPushDown = bIsPushDown
+      this.$emit('on-push-down', this.bIsPushDown)
+    },
+  },
+}
 </script>
 <style lang="scss" scoped>
 $search_color: #c0c4cc;
@@ -112,8 +114,8 @@ $search_color: #c0c4cc;
     margin-left: 10px;
   }
   display: inline-block;
-  width: 240px;
-  height: 35px;
+  width: 30%;
+  height: 40px;
   color: #dcdfe6;
   position: relative;
   font-size: 14px;

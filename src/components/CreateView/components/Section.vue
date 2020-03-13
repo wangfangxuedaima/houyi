@@ -3,19 +3,19 @@
 </template>
 <script>
 export default {
-  name: "Section",
+  name: 'Section',
   props: {
     config: {
       type: Object,
       default: () => {
         return {
-          type: "Section",
-          title: "第一部分" // 部分标题
-        };
-      }
-    }
-  }
-};
+          type: 'Section',
+          title: '第一部分', // 部分标题
+        }
+      },
+    },
+  },
+}
 </script>
 <style lang="scss" scoped>
 .section-title {

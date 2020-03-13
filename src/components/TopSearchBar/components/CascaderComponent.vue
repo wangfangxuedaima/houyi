@@ -1,5 +1,8 @@
 <template>
-  <el-cascader v-model.trim="model" v-bind="config.attrs" class="top_search_cascader"></el-cascader>
+  <el-cascader v-model.trim="model"
+    v-bind="config.attrs"
+    class="top_search_cascader">
+  </el-cascader>
 </template>
 <script>
 export default {
@@ -9,36 +12,35 @@ export default {
       type: Object,
       default: () => {
         return {
-          type: "Cascader",
-          prop: "cascader",
+          type: 'Cascader',
+          prop: 'cascader',
           formItemAttrs: {
-            label: "cascader",
+            label: 'cascader',
             rules: [
               {
-                required: true,
-                message: "请输入cascader类型",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入cascader类型', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
-            placeholder: "请输入",
-            clearable: true
-          }
-        };
-      }
-    }
+            placeholder: '请输入',
+            clearable: true,
+          },
+        }
+      },
+    },
   },
   computed: {
     model: {
-      get: function() {
-        return this.value;
+      get: function () {
+        return this.value
       },
-      set: function(val) {
-        this.$emit("input", val);
-      }
-    }
-  }
-};
+      set: function (val) {
+        this.$emit('input', val)
+      },
+    },
+  },
+}
 </script>
-<style></style>
+<style >
+</style>

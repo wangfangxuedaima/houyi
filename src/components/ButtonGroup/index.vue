@@ -10,28 +10,28 @@ export default {
     // align 按钮对齐方式: left ,center, right
     align: {
       type: String,
-      default: "center"
+      default: 'center',
     },
     // isFloat 是否浮动， 如果不浮动，则固定在页面底部
     isFloat: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
-    return {};
+    return {}
   },
   computed: {
     classObject() {
       return {
         op: true,
         float: this.isFloat,
-        [this.align]: true
-      };
-    }
+        [this.align]: true,
+      }
+    },
   },
-  methods: {}
-};
+  methods: {},
+}
 </script>
 <style lang="scss" scoped>
 .op {

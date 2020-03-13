@@ -10,13 +10,12 @@ const ThreeController = {
     let headerNum = (pageNum - 1) * pageSize;
     sql = `select * from three_wf where skuId like '%${skuId}%' limit ${headerNum}, ${pageSize}`;
     let rows = await dbUtils.ruohuaPool(sql);
-    data = {
+    ctx.body = {
       rows,
       page: Number(pageNum),
       records,
       total
     };
-    ctx.body = { data };
   }
 };
 

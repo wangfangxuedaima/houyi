@@ -1,16 +1,20 @@
 import ButtonGroup from "@/components/ButtonGroup";
 import PaginationPro from "@/components/PaginationPro";
 import Search from "@/components/Search";
+import Status from "@/components/Status";
+import StatusTag from "@/components/StatusTag";
+import store from "@/store";
 import { fScrollToFirstError } from "@/utils/index";
 import * as clipboard from "clipboard-polyfill";
 import { get } from "lodash";
-import store from "@/store";
 
 // 全局混入
 // 详情页需要用到的(如新增，修改页面)
 export const detailMixins = {
   components: {
-    ButtonGroup
+    ButtonGroup,
+    StatusTag,
+    Status
   },
   data() {
     return {
@@ -128,7 +132,8 @@ export const listMixins = {
   mixins: [copyMixins],
   components: {
     PaginationPro,
-    Search
+    Search,
+    StatusTag
   },
   methods: {
     getValue(target, keys) {
@@ -141,23 +146,30 @@ export const listMixins = {
  * 权限检测混入
  */
 export const PermissionMixins = {
+  computed: {
+    isAdmin() {
+      return store.state.user.roles.isAdmin;
+    }
+  },
   methods: {
     fCheckHasPermission(path) {
-      if (!path) {
-        return true;
+      if (store.state.app.checkAuth) {
+        return store.state.user.userInfo.modules.some((v) => v.url === path);
       }
-      let hasPermisson = store.state.user.oldModuleUrls.includes(path);
-      return hasPermisson;
+      return true;
     },
     fCheckHasOnePermission(paths) {
-      let bFlag = false;
-      for (let i = 0; i < paths.length; i++) {
-        bFlag = this.fCheckHasPermission(paths[i]);
-        if (bFlag) {
-          break;
+      if (store.state.app.checkAuth) {
+        let bFlag = false;
+        for (let i = 0; i < paths.length; i++) {
+          bFlag = this.fCheckHasPermission(paths[i]);
+          if (bFlag) {
+            break;
+          }
         }
+        return bFlag;
       }
-      return bFlag;
+      return true;
     }
   }
 };

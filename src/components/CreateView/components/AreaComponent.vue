@@ -58,9 +58,7 @@
 </template>
 
 <script>
-import "vue-tree-halower/dist/halower-tree.min.css";
-import { VTree } from "vue-tree-halower";
-import request from "@/utils/request";
+import request from "@/api/request";
 import Vue from "vue";
 import { get } from "lodash";
 Vue.use(VTree);

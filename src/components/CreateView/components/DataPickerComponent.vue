@@ -1,54 +1,56 @@
 <template>
-  <el-date-picker v-model="model" v-bind="config.attrs" class="create_view_datapick"></el-date-picker>
+  <el-date-picker v-model="model"
+    v-bind="config.attrs"
+    class="create_view_datapick">
+  </el-date-picker>
 </template>
 <script>
 export default {
-  name: "DataPicker",
+  name: 'DataPicker',
   props: {
     value: {
       type: [String, Array],
-      default: ""
+      default: '',
     },
     config: {
       type: Object,
       default: () => {
         return {
-          type: "DataPicker",
-          prop: "dataPicker",
+          type: 'DataPicker',
+          prop: 'dataPicker',
           formItemAttrs: {
-            label: "dataPicker",
+            label: 'dataPicker',
             rules: [
               {
-                required: true,
-                message: "请输入",
-                trigger: "blur"
-              }
-            ]
+                required: true, message: '请输入', trigger: 'blur',
+              },
+            ],
           },
           attrs: {
             clearable: true,
             // type: 'date',
             // format: 'yyyy-MM-dd',
             // 'value-format': 'yyyy-MM-dd'
-            type: "datetimerange",
-            "start-placeholder": "开始日期",
-            "end-placeholder": "结束日期",
-            format: "yyyy-MM-dd HH:mm:ss",
-            "value-format": "yyyy-MM-dd HH:mm:ss"
-          }
-        };
+            type: 'datetimerange',
+            'start-placeholder': '开始日期',
+            'end-placeholder': '结束日期',
+            format: 'yyyy-MM-dd HH:mm:ss',
+            'value-format': 'yyyy-MM-dd HH:mm:ss'
+
+          },
+        }
       }
-    }
+    },
   },
   computed: {
     model: {
-      get: function() {
-        return this.value || this.config.default;
+      get: function () {
+        return this.value
       },
-      set: function(val) {
-        this.$emit("input", val);
-      }
-    }
-  }
-};
+      set: function (val) {
+        this.$emit('input', val)
+      },
+    },
+  },
+}
 </script>

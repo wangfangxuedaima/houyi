@@ -22,6 +22,7 @@
 <script>
 import ExtendsBase from "@/components/ExtendsBase";
 import request from "@/api/request";
+import requestOut from "@/api/requestOut";
 import { get, debounce } from "lodash";
 const DefaultConfig = {};
 
@@ -60,10 +61,11 @@ const DefaultConfig = {};
     }
  */
 
-const sTotalNumberKey = "records";
+const sTotalNumberKey = "data.total";
 const sPageSizeKey = "pageSize";
-const sDataKey = "rows";
-const sPageKey = "page";
+const sDataKey = "data.rows";
+const sPageKey = "pageNum";
+
 export default {
   extends: ExtendsBase,
   props: {
@@ -113,13 +115,17 @@ export default {
     paginationClassName: {
       type: String,
       default: ""
+    },
+    requestOut: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       currentPage: 1,
       total: 0,
-      nPageSize: this.pageSize || 15,
+      nPageSize: this.pageSize || 20,
       aList: [],
       height: 100
     };
@@ -181,7 +187,7 @@ export default {
       if (typeof this.beforeSend === "function") {
         this.beforeSend();
       }
-      let _bIsOk = true;
+      // let _bIsOk = true;
       let oRequest = {
         url: this.url,
         method: this.method || "get"
@@ -196,28 +202,65 @@ export default {
       } else {
         oRequest.params = params;
       }
-
-      await request(oRequest)
+      if (this.requestOut) {
+        await this.fSendRequestOut(oRequest);
+      } else {
+        await this.fSendRequest(oRequest);
+      }
+      this.$emit("update:loading", false);
+      // this.$emit("load-finish", _bIsOk);
+    },
+    async fSendRequestOut(oRequest) {
+      await requestOut(oRequest)
         .then((response) => {
-          let sListKey = this.keyMap.data || sDataKey;
-          let sTotalKey = this.keyMap.total || sTotalNumberKey;
-          let arr = get(response, sListKey, []);
-          if (typeof this.filter === "function") {
-            arr = this.filter(arr);
+          if (response.code === 200 && response.data) {
+            let sListKey = this.keyMap.data || sDataKey;
+            let sTotalKey = this.keyMap.total || sTotalNumberKey;
+            let arr = get(response, sListKey, []);
+            if (typeof this.filter === "function") {
+              arr = this.filter(arr);
+            }
+            this.total = +get(response, sTotalKey) || 0;
+            if (typeof this.onResponse === "function") {
+              this.onResponse.call(this.$parent, response);
+            }
+            this.aList = arr;
+            this.$emit("input", arr);
+          } else {
+            // _bIsOk = false;
+            console.log(response.message);
           }
-          this.total = +get(response, sTotalKey) || 0;
-          if (typeof this.onResponse === "function") {
-            this.onResponse.call(this.$parent, response);
-          }
-          this.aList = arr;
-          this.$emit("input", arr);
         })
         .catch((error) => {
           console.log(error);
-          _bIsOk = false;
+          // _bIsOk = false;
         });
-      this.$emit("update:loading", false);
-      this.$emit("load-finish", _bIsOk);
+    },
+    async fSendRequest(oRequest) {
+      await request(oRequest)
+        .then((response) => {
+          if (response.code === 200 && response.data) {
+            let sListKey = this.keyMap.data || sDataKey;
+            let sTotalKey = this.keyMap.total || sTotalNumberKey;
+            let arr = get(response, sListKey, []);
+            if (typeof this.filter === "function") {
+              arr = this.filter(arr);
+            }
+            this.total = +get(response, sTotalKey) || 0;
+            if (typeof this.onResponse === "function") {
+              this.onResponse.call(this.$parent, response);
+            }
+            this.aList = arr;
+            this.$emit("input", arr);
+          } else {
+            // _bIsOk = false;
+            console.log(response.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          // _bIsOk = false;
+        });
     },
     fReload(b2Page1 = true) {
       // todo, 是否需要重置params。
@@ -243,12 +286,11 @@ export default {
   }
 };
 </script>
-<style lang="scss">
-.pagination-table-conainer {
-  .pagination-conainer {
-    margin: 15px 0 0 0;
-    text-align: center;
-  }
+<style lang="scss" scoped>
+.pagination-conainer {
+  margin: 15px 0 0 0;
+  text-align: center;
+  z-index: 10;
 }
 .pagination-conainer-sticky {
   position: sticky;

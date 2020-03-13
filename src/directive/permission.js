@@ -9,12 +9,28 @@
  *
  */
 const permission = {
-  name: "has",
+  name: 'has',
   inserted(el, binding, vnode) {
-    const b = vnode.context.fCheckHasPermission(binding.value);
-    if (!b) {
-      el.parentNode && el.parentNode.removeChild(el);
+    // console.log(binding)
+    switch (true) {
+      // 如果是普通按钮判断，则直接判断value值
+      case binding.modifiers.normal:
+        // if (!binding.value) {
+        //   el.parentNode && el.parentNode.removeChild(el)
+        // }
+
+        break
+
+      // 默认情况下，是对按钮权限的判断，需要从路由表里进行对比
+      default:
+        const b = vnode.context.fCheckHasPermission(binding.value)
+        if (!b) {
+          el.parentNode && el.parentNode.removeChild(el)
+        }
+        break
+      // disable
+      //
     }
-  }
-};
-export default permission;
+  },
+}
+export default permission
