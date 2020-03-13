@@ -5,6 +5,7 @@ const dayjs = require("dayjs");
 const superagent = require("superagent");
 const csvtojson = require("csvtojson");
 const dbUtils = require("../../db");
+const { parse } = require("json2csv");
 
 Array.prototype.each = function(trans) {
   for (var i = 0; i < this.length; i++) this[i] = trans(this[i], i, this);
@@ -44,6 +45,9 @@ let csvNewData = "";
 let productCount = 0;
 let insertCount = 0;
 
+let convertData = [];
+let convertHeader = [];
+
 function inputProducts2Db(url, user, passwd) {
   // First, Clear up table
   dbUtils.ruohuaPool("truncate table three_wf");
@@ -51,19 +55,26 @@ function inputProducts2Db(url, user, passwd) {
   csvtojson({
     delimiter: [";", ";;"]
   })
-    .fromStream(superagent.get(url).auth(user, passwd))
+    .fromStream(
+      superagent
+        .get(url)
+        .auth(user, passwd)
+        .on("error", (err) => {
+          console.log(err);
+        })
+    )
     // .fromFile(csvPath)
     .preRawData((csvRawData) => {
       let data = csvRawData.replace(regex, function($0) {
         return replacements[$0];
       });
-      csvNewData += data;
+      // csvNewData += data;
       return data;
     })
     .subscribe((json) => {
       // console.log(json);
-      productCount++;
-      console.log("Product Count:", productCount);
+      // productCount++;
+      // console.log("Product Count:", productCount);
 
       try {
         let product = json,
@@ -72,6 +83,16 @@ function inputProducts2Db(url, user, passwd) {
         for (let i = 0; i < qtyAry.length; i++) {
           if (parseFloat(qtyAry[i]) !== 0) {
             const parsedProduct = parseProduct(product, i);
+
+            //生成output数据
+            if (convertData.length === 0) {
+              for (let key in parsedProduct) {
+                convertHeader.push(key);
+              }
+            }
+            convertData.push(parsedProduct);
+
+            //生成sql语句 并写入database
             const sql = generateSql("three_wf", parsedProduct);
             dbUtils
               .ruohuaPool(sql)
@@ -90,19 +111,22 @@ function inputProducts2Db(url, user, passwd) {
     })
     .on("done", () => {
       console.log(dayjs().format("YYYYMMDD-hh:mm:ss"));
-      fs.writeFile("../csv/data.txt", csvNewData, function() {
-        console.log("data.txt写入成功");
-      });
-      dbUtils.ruohuaPool("truncate table three_product");
-      let sql = `insert into three_product select  * from three_wf`;
-      dbUtils
-        .ruohuaPool(sql)
-        .then((res) => {
-          console.log("完成");
-        })
-        .catch((err) => {
-          console.error("导入新表", err);
+      // fs.writeFile("../csv/data.txt", csvNewData, function() {
+      //   console.log("data.txt写入成功");
+      // });
+      // console.log(convertData);
+      // console.log(convertHeader);
+      try {
+        const csv = parse(convertData, { convertHeader });
+        const csvOutputPath = path.join(__dirname, "../csv/output_products.csv");
+        fs.writeFile(csvOutputPath, csv, () => {
+          console.log("csv写入成功");
         });
+      } catch (e) {
+        console.log(e);
+      }
+
+      console.log("完成");
     });
 }
 
