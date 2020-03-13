@@ -1,4 +1,4 @@
-// const path = require("path");
+const path = require("path");
 const fs = require("fs");
 // const csvPath = path.resolve(__dirname, "../csv/three.csv");
 const dayjs = require("dayjs");
@@ -106,12 +106,10 @@ function inputProducts2Db(url, user, passwd) {
     })
     .on("done", () => {
       console.log(dayjs().format("YYYYMMDD-hh:mm:ss"));
-      // fs.writeFile("../csv/data.txt", csvNewData, function() {
-      //   console.log("data.txt写入成功");
-      // });
-      // console.log(convertData);
-      // console.log(convertHeader);
       insertCount = 0;
+      // 复制一份数据到新表
+      let sql = `insert into three_product select * from three_wf`;
+      dbUtils.ruohuaPool(sql);
       try {
         const csv = parse(convertData, { convertHeader });
         const csvOutputPath = path.join(__dirname, "../../../dist/csv/three.csv");
