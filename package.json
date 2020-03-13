@@ -22,6 +22,7 @@
     "csvtojson": "^2.0.10",
     "dayjs": "^1.8.21",
     "js-cookie": "^2.2.1",
+    "json2csv": "^4.5.4",
     "koa-art-template": "^1.1.1",
     "koa-compose": "^4.1.0",
     "koa-helmet": "^5.2.0",
