@@ -40,15 +40,10 @@ function properties(obj) {
   for (var p in obj) props.push(p);
   return props;
 }
-
-let csvNewData = "";
-let productCount = 0;
 let insertCount = 0;
-
-let convertData = [];
-let convertHeader = [];
-
 function inputProducts2Db(url, user, passwd) {
+  let convertData = [];
+  let convertHeader = [];
   // First, Clear up table
   dbUtils.ruohuaPool("truncate table three_wf");
 
@@ -116,9 +111,15 @@ function inputProducts2Db(url, user, passwd) {
       // });
       // console.log(convertData);
       // console.log(convertHeader);
+      insertCount = 0;
       try {
         const csv = parse(convertData, { convertHeader });
-        const csvOutputPath = path.join(__dirname, "../csv/output_products.csv");
+        const csvOutputPath = path.join(__dirname, "../../../dist/csv/three.csv");
+        if (fs.existsSync(csvOutputPath)) {
+          fs.unlinkSync(csvOutputPath);
+        } else {
+          console.log("inexistence path：", delPath);
+        }
         fs.writeFile(csvOutputPath, csv, () => {
           console.log("csv写入成功");
         });
