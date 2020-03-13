@@ -1,28 +1,98 @@
 const path = require("path");
+const fs = require("fs");
 const dayjs = require("dayjs");
 const superagent = require("superagent");
 const csvtojson = require("csvtojson");
 const csvPath = path.resolve(__dirname, "../csv/three.csv");
 const dbUtils = require("../../db");
+const { parse } = require("json2csv");
+
+Array.prototype.each = function(trans) {
+  for (var i = 0; i < this.length; i++) this[i] = trans(this[i], i, this);
+  return this;
+};
+
+Array.prototype.map = function(trans) {
+  return [].concat(this).each(trans);
+};
+
+RegExp.escape = function(str) {
+  return new String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+};
+
+let replacements = {
+  "'": "%asop$",
+  // '";;"': '";"',
+  "&nbsp;": " ",
+  "&amp;": " ",
+  "&#039;": " "
+};
+
+let regex = new RegExp(
+  properties(replacements)
+    .map(RegExp.escape)
+    .join("|"),
+  "g"
+);
+
+function properties(obj) {
+  var props = [];
+  for (var p in obj) props.push(p);
+  return props;
+}
+
+let csvNewData = "";
+let productCount = 0;
+let insertCount = 0;
+
+let convertData = [];
+let convertHeader = [];
 
 function inputProducts2Db(url, user, passwd) {
   // First, Clear up table
   dbUtils.ruohuaPool("truncate table three_wf");
 
   csvtojson({
-    delimiter: ";",
-    escape: " "
+    delimiter: [";", ";;"]
   })
-    .fromStream(superagent.get(url).auth(user, passwd))
+    .fromStream(
+      superagent
+        .get(url)
+        .auth(user, passwd)
+        .on("error", (err) => {
+          console.log(err);
+        })
+    )
     // .fromFile(csvPath)
+    .preRawData((csvRawData) => {
+      let data = csvRawData.replace(regex, function($0) {
+        return replacements[$0];
+      });
+      // csvNewData += data;
+      return data;
+    })
     .subscribe((json) => {
+      // console.log(json);
+      // productCount++;
+      // console.log("Product Count:", productCount);
+
       try {
-        let product = replaceSingleQuote(json),
-          qtyAry = product.Qty.split(",");
+        let product = json,
+          qtyAry = product["Qty Detail"].split(",");
 
         for (let i = 0; i < qtyAry.length; i++) {
           if (parseFloat(qtyAry[i]) !== 0) {
             const parsedProduct = parseProduct(product, i);
+
+            //生成output数据
+            if (convertData.length === 0) {
+              for (let key in parsedProduct) {
+                convertHeader.push(key);
+              }
+            }
+            convertData.push(parsedProduct);
+
+            //生成sql语句 并写入database
             const sql = generateSql("three_wf", parsedProduct);
             dbUtils
               .ruohuaPool(sql)
@@ -41,18 +111,32 @@ function inputProducts2Db(url, user, passwd) {
     })
     .on("done", () => {
       console.log(dayjs().format("YYYYMMDD-hh:mm:ss"));
+      // fs.writeFile("../csv/data.txt", csvNewData, function() {
+      //   console.log("data.txt写入成功");
+      // });
+      // console.log(convertData);
+      // console.log(convertHeader);
+      try {
+        const csv = parse(convertData, { convertHeader });
+        const csvOutputPath = path.join(__dirname, "../csv/output_products.csv");
+        fs.writeFile(csvOutputPath, csv, () => {
+          console.log("csv写入成功");
+        });
+      } catch (e) {
+        console.log(e);
+      }
+
       console.log("完成");
     });
 }
 
-function replaceSingleQuote(data) {
-  return JSON.parse(JSON.stringify(data).replace(/'/g, "%asop$"));
-}
+// function replaceSingleQuote(data) {
+//   return JSON.parse(JSON.stringify(data).replace(/'/g, "%asop$"));
+// }
 
 function parseProduct(product, index) {
-  // console.log(product);
   let sizeAry = product.Size.split(","),
-    qtyAry = product.Qty.split(","),
+    qtyAry = product["Qty Detail"].split(","),
     sizeAndFit = `${qtyAry[index]} ${product["Bag length"]} ${product["Bag height"]} ${product["Bag weight"]} ${product["Handle height"]} ${product["Shoulder bag length"]} ${product["Belt length"]} ${product["Belt height"]} ${product["Accessory length"]} ${product["Accessory height"]} ${product["Accessory weight"]} ${product["Heel height"]} ${product["Plateau height"]} ${product["Insole length"]}`;
 
   return {
@@ -78,14 +162,12 @@ function parseProduct(product, index) {
   };
 }
 
-// let count = 0;
-
 function generateSql(tableName, product) {
   const sqlData = wrapSqlData(product);
   const sql = "INSERT INTO " + tableName + " (" + sqlData.header + ") VALUES (" + sqlData.values + ")";
   // console.log(sql);
-  // count++;
-  // console.log(count);
+  insertCount++;
+  console.log("Insert Count", insertCount);
   return sql;
 }
 
@@ -103,6 +185,6 @@ function wrapSqlData(product) {
   };
 }
 
-// inputProducts2Sql();
+// inputProducts2Db();
 
 module.exports = { inputProducts2Db };
