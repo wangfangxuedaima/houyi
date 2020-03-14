@@ -112,17 +112,19 @@ function inputProducts2Db(url, user, passwd) {
       dbUtils.ruohuaPool(sql);
       try {
         const csv = parse(convertData, { convertHeader });
+        console.log("cav的大小", csv.length);
         const csvOutputPath = path.join(__dirname, "../../../dist/csv/three.csv");
         if (fs.existsSync(csvOutputPath)) {
           fs.unlinkSync(csvOutputPath);
+          console.log("删除成功");
         } else {
-          console.log("inexistence path：", delPath);
+          console.log("inexistence path：", csvOutputPath);
         }
         fs.writeFile(csvOutputPath, csv, () => {
           console.log("csv写入成功");
         });
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
 
       console.log("完成");
