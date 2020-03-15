@@ -8,7 +8,7 @@ const ThreeController = {
     records = records[0].records;
     total = Math.ceil(records / pageSize);
     let headerNum = (pageNum - 1) * pageSize;
-    sql = `select * from three_wf where skuId like '%${skuId}%' limit ${headerNum}, ${pageSize}`;
+    sql = `select * from three_product where skuId like '%${skuId}%' limit ${headerNum}, ${pageSize}`;
     let rows = await dbUtils.ruohuaPool(sql);
     ctx.body = {
       rows,

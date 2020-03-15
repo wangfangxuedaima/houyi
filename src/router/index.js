@@ -7,7 +7,7 @@ import systemConfig from "../config";
 import constantRouter from "./modules/constant"; // 公共路由
 import flightSearch from "./modules/flightSearch"; // flightSearch
 // import Monitor from './modules/monitor'; // monitor
-import probleInvest from "./modules/probleInvest"; // probleInvest
+// import probleInvest from "./modules/probleInvest"; // probleInvest
 import System from "./modules/system"; // 系统管理
 
 Vue.use(Router);
@@ -16,8 +16,8 @@ export const constantRouterMap = constantRouter;
 export const asyncRouterMap = [
   ...System,
   // ...Monitor,
-  ...flightSearch,
-  ...probleInvest
+  ...flightSearch
+  // ...probleInvest
 ];
 const whiteList = ["/error"]; // 不重定向白名单
 

@@ -8,7 +8,7 @@ export default [
     name: "flight-search",
     alwaysShow: true,
     meta: {
-      title: "投放查询",
+      title: "供应商查询",
       icon: "el-icon-search"
     },
     children: [
@@ -17,21 +17,21 @@ export default [
         name: "adcode-info",
         component: () => import("@/views/flightSearch/adcode"),
         meta: {
-          title: "adcode查询",
+          title: "查询",
           activeMenu: "adcode-info",
           icon: "el-icon-search"
         }
-      },
-      {
-        path: "adplus",
-        name: "adcode-adplus",
-        component: () => import("@/views/flightSearch/adplus"),
-        meta: {
-          title: "实时数据查询",
-          activeMenu: "adcode-adplus",
-          icon: "el-icon-s-promotion"
-        }
       }
+      // {
+      //   path: "adplus",
+      //   name: "adcode-adplus",
+      //   component: () => import("@/views/flightSearch/adplus"),
+      //   meta: {
+      //     title: "实时数据查询",
+      //     activeMenu: "adcode-adplus",
+      //     icon: "el-icon-s-promotion"
+      //   }
+      // }
     ]
   }
 ];

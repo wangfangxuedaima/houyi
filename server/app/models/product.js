@@ -104,10 +104,10 @@ function inputProducts2Db(url, user, passwd) {
     .on("error", (err) => {
       console.log(err);
     })
-    .on("done", () => {
+    .on("done", async () => {
       console.log(dayjs().format("YYYYMMDD-hh:mm:ss"));
       insertCount = 0;
-      dbUtils.ruohuaPool("truncate table three_product");
+      await dbUtils.ruohuaPool("truncate table three_product");
 
       // 复制一份数据到新表
       let sql = `insert into three_product select * from three_wf`;
