@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "art-template": "^4.13.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-plugin-component": "^1.1.1",
     "clipboard-polyfill": "^2.8.6",
     "core-js": "^3.6.4",
